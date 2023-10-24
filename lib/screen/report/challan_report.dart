@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
-import 'package:smerp/models/pdf_models/pdf_bank.dart';
-import 'package:smerp/widgets/method.dart';
 
+
+import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_challan.dart';
 import '../../widgets/search.dart';
 

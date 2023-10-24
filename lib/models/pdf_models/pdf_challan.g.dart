@@ -8,7 +8,7 @@ part of 'pdf_challan.dart';
 
 class ChallanAdapter extends TypeAdapter<Challan> {
   @override
-  final int typeId = 5;
+  final int typeId = 2;
 
   @override
   Challan read(BinaryReader reader) {

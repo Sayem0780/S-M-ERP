@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
 import 'package:smerp/models/pdf_models/pdf_quotation.dart';
-import 'package:smerp/widgets/method.dart';
-
+import '../../methods/pdf_method.dart';
 import '../../widgets/search.dart';
 
 class QuotationReport extends StatefulWidget {
@@ -15,7 +14,6 @@ class QuotationReport extends StatefulWidget {
 }
 
 class _QuotationReportState extends State<QuotationReport>  with WidgetsBindingObserver{
-  @override
   late Box<Quotation?> _box;
   bool isSecondSegmentVisible = false;
   Quotation? selectedReport;
@@ -24,13 +22,13 @@ class _QuotationReportState extends State<QuotationReport>  with WidgetsBindingO
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this as WidgetsBindingObserver);
+    WidgetsBinding.instance.addObserver(this);
     openBox();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this as WidgetsBindingObserver);
+    WidgetsBinding.instance.removeObserver(this);
     _box.close();
     super.dispose();
   }
@@ -70,9 +68,10 @@ class _QuotationReportState extends State<QuotationReport>  with WidgetsBindingO
     });
   }
   TextEditingController cNoController = TextEditingController();
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Quotation Report"),centerTitle: true,),
+      appBar: AppBar(title: const Text("Quotation Report"),centerTitle: true,),
       body: Container(
         child: customDataList.isNotEmpty?Container(
           child: Row(
@@ -80,7 +79,7 @@ class _QuotationReportState extends State<QuotationReport>  with WidgetsBindingO
               Expanded(
                 child: Column(
                   children: [
-                    SizedBox(height: 20,),
+                    const SizedBox(height: 20,),
                     SearchWidget(cNoController: cNoController, searchChassis: searchChassis),
                     Expanded(
                       child: GridView.builder(
@@ -105,18 +104,18 @@ class _QuotationReportState extends State<QuotationReport>  with WidgetsBindingO
                               color: selectedListTileIndex == index ? Colors.amber.shade500 : null,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(
+                                side: const BorderSide(
                                   width: 2,
                                   color: Colors.black,
                                 ),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(10.0),
+                                padding: const EdgeInsets.all(10.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Vehicle Name: ${customData!.a.name}'),
-                                    Text('Chassis No: ${customData!.a.chassis}'),
+                                    Text('Chassis No: ${customData.a.chassis}'),
                                   ],
                                 ),
                               ),
@@ -134,14 +133,15 @@ class _QuotationReportState extends State<QuotationReport>  with WidgetsBindingO
                   build: (format) => quotationPdf(
                       selectedReport!.a,t: selectedReport?.intro??"",
                       ac:selectedReport?.ac??"",price: selectedReport?.price??"",
-                      fit: selectedReport?.fittings??"",val: selectedReport?.validity??"",
-                      method: selectedReport?.payment_method??"",qcode: selectedReport?.qcode??"",
-                      currentDate: selectedReport?.currentDate??""),
-                )),
+                      fit: selectedReport?.fittings??"",val: selectedReport?.validity,
+                      method: selectedReport?.payment_method??"",
+                      currentDate: selectedReport?.currentDate??"",inWord: selectedReport?.qcode??""),
+                )
+                ),
               )
             ],
           ),
-        ):Text("No Data Found"),
+        ):const Text("No Data Found"),
       )
       ,
     );

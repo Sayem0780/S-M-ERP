@@ -8,7 +8,7 @@ part of 'pdf_cutomer.dart';
 
 class CustomAdapter extends TypeAdapter<Custom> {
   @override
-  final int typeId = 2;
+  final int typeId = 3;
 
   @override
   Custom read(BinaryReader reader) {

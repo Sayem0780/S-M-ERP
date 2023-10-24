@@ -4,8 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:smerp/models/chassis_model.dart';
 import 'package:smerp/models/pdf_models/pdf_quotation.dart';
+import '../../methods/numberToWord.dart';
+import '../../methods/pdf_method.dart';
 
-import '../method.dart';
 class QuotationFormate extends StatefulWidget {
   final Chassis a;
   bool pressed = false;
@@ -21,10 +22,29 @@ class _QuotationFormateState extends State<QuotationFormate> {
   TextEditingController fittingsController = TextEditingController();
   TextEditingController validityController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  TextEditingController paymentController = TextEditingController();
-  String intro="",fittings="",validity="",price="",payment_method="",ac ="";
-  String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-  final qcode = UniqueKey().toString();
+  TextEditingController paymentController = TextEditingController(text: 'Cash/Pay-Order/DD/RTGS');
+  String intro="",fittings="",validity="",price="",inWord="",payment_method="Cash/Pay-Order/DD/RTGS",ac ="";
+
+  String selectedOption = '10 (Ten) Days';
+  String currentDate = DateFormat('MMMM d, yyyy').format( DateTime.now());
+  void word(){
+    bool isDouble(price) {
+      try {
+        double.parse(price.toString().replaceAll(',', ''));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    price.isNotEmpty ? setState(() {
+      if (isDouble(price)) {
+        double a = double.parse(price.replaceAll(',', ''));
+        inWord = convertNumberToWord(a);
+      }
+    }):setState(() {
+      inWord = "zero";
+    });
+  }
   void saveData() async {
     final box = await Hive.openBox('quotatioBox'); // Open the Hive box
 
@@ -34,25 +54,22 @@ class _QuotationFormateState extends State<QuotationFormate> {
         intro: intro,
         ac: ac,
         fittings: fittings,
-        validity: validity,
+        validity: selectedOption,
         price: price.toString(),
         payment_method: payment_method,
-        qcode: qcode,
+        qcode: inWord,
         currentDate: currentDate);
 
     await box.add(customData); // Add the customData object to the box
 
     await box.close(); // Close the box when done
-
-    print('Data saved successfully!');
   }
   @override
   Widget build(BuildContext context) {
 
-    String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
     return Scaffold(
       body: widget.pressed?PdfPreview(
-        build: (format) => quotationPdf(widget.a,t: intro,ac: ac,fit: fittings,val: validity,price: price,method: payment_method,qcode: qcode,currentDate: currentDate),
+        build: (format) => quotationPdf(widget.a,t: intro,ac: ac,fit: fittings,val: selectedOption,price: price,method: payment_method,currentDate: currentDate,inWord: inWord),
       ):Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -70,7 +87,7 @@ class _QuotationFormateState extends State<QuotationFormate> {
                       vertical: 15.0,),
                   child: TextFormField(
                     controller: introController,
-                    maxLines: 4,
+                    maxLines: 6,
                     keyboardType: TextInputType.multiline,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -111,7 +128,7 @@ class _QuotationFormateState extends State<QuotationFormate> {
                   padding: const EdgeInsets.all(8.0),
                   child: Table(
                     columnWidths: {
-                      0: FlexColumnWidth(.25),   // Width for the first column
+                      0: FlexColumnWidth(.30),   // Width for the first column
                       1: FlexColumnWidth(2),   // Width for the second column
                       2: FlexColumnWidth(3),   // Width for the third column
                     },
@@ -123,10 +140,45 @@ class _QuotationFormateState extends State<QuotationFormate> {
                       TableItem('4','CC', widget.a.cc),
                       TableItem('3','Color', widget.a.color),
                       TableItem('6','Model', widget.a.model),
-                      InputItem('7','Fittings',fittings,fittingsController,line: 3),
-                      InputItem('8','Validity', validity,validityController),
+                      InputItem('7','Fittings',fittings,fittingsController,line: 10),
+                      TableRow(
+                      children: [
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('8'),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Validity'),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: DropdownButton<String>(
+                              value: selectedOption,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                });
+                              },
+                              items: <String>['10 (Ten) Days', '20 (Twenty) Days','30 (Thirty) Days','45 (Forty-Five) Days','60 (Sixty) Days','90 (Ninety) Days'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                       InputItem('9','Price', price,priceController),
-                      InputItem('10','Payment Method',payment_method,paymentController),
+                      TableItem('12', 'In Word BDT', inWord),
+                      InputItem('10','Payment Mode',payment_method,paymentController),
                     ],
                   ),
                 ),
@@ -155,6 +207,7 @@ class _QuotationFormateState extends State<QuotationFormate> {
 
   }
   TableRow InputItem(String sl,String type,String item,TextEditingController cnt,{int line = 1}) {
+    final format = NumberFormat('##,##,##0.00');
     return TableRow(
       children: [
         TableCell(
@@ -186,10 +239,13 @@ class _QuotationFormateState extends State<QuotationFormate> {
                   } else if (type == 'Validity') {
                     validity = value;
                   } else if (type == 'Price') {
-                    price = value;
-                  } else if (type == 'Payment Method') {
+                    cnt.text = format.format(double.parse(value.replaceAll(',', '')));
+                    cnt.selection = TextSelection.fromPosition(TextPosition(offset: cnt.text.length-3));
+                    price = cnt.text.toString();
+                  } else if (type == 'Payment Mode') {
                     payment_method = value;
                   }
+                  word();
                 });
               },
             ),

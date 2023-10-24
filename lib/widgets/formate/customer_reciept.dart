@@ -3,10 +3,12 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:smerp/models/chassis_model.dart';
-import 'package:smerp/widgets/method.dart';
 
+import '../../methods/numberToWord.dart';
+import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_cutomer.dart';
-import '../methods/numberToWord.dart';
+
+
 class CustomerRecieptFormate extends StatefulWidget {
   final Chassis a;
   bool pressed = false;
@@ -24,9 +26,10 @@ class _CustomerRecieptFormateState extends State<CustomerRecieptFormate> {
   TextEditingController customerPayController = TextEditingController();
   String intro="",price='',address="",phone="",customerPay="",inWord="";
   final cocode = UniqueKey().toString();
+  final format = NumberFormat('##,##,##0.00');
   void word(){
     setState(() {
-      double a = customerPayController.text.isEmpty||customerPayController.text.length==0?0:double.parse(customerPayController.text);
+      double a = customerPayController.text.isEmpty||customerPayController.text.length==0?0:double.parse(customerPayController.text.replaceAll(',', '').trim().toString());
       inWord = convertNumberToWord(a) ;
     });
   }
@@ -196,9 +199,13 @@ class _CustomerRecieptFormateState extends State<CustomerRecieptFormate> {
               onChanged: (String value) {
                 setState(() {
                 if (type == 'Price') {
-                    price = value;
+                  cnt.text = format.format(double.parse(value.replaceAll(',', '')));
+                  cnt.selection = TextSelection.fromPosition(TextPosition(offset: cnt.text.length-3));
+                  price = cnt.text.toString();
                   } else if (type == 'Customer Paid') {
-                    customerPay = value;
+                  cnt.text = format.format(double.parse(value.replaceAll(',', '')));
+                  cnt.selection = TextSelection.fromPosition(TextPosition(offset: cnt.text.length-3));
+                  customerPay = cnt.text.toString();
                   }
                 });
                 word();

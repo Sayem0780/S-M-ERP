@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:smerp/models/chassis_model.dart';
 
+import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_challan.dart';
-import '../method.dart';
+
 class ChallanFormate extends StatefulWidget {
   final Chassis a;
   bool pressed = false;

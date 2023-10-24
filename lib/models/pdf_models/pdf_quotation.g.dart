@@ -8,7 +8,7 @@ part of 'pdf_quotation.dart';
 
 class QuotationAdapter extends TypeAdapter<Quotation> {
   @override
-  final int typeId = 6;
+  final int typeId = 4;
 
   @override
   Quotation read(BinaryReader reader) {

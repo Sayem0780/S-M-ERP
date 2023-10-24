@@ -8,7 +8,7 @@ part of 'pdf_bill.dart';
 
 class BillAdapter extends TypeAdapter<Bill> {
   @override
-  final int typeId = 3;
+  final int typeId = 1;
 
   @override
   Bill read(BinaryReader reader) {

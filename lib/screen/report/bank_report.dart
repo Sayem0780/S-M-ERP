@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
 import 'package:smerp/models/pdf_models/pdf_bank.dart';
-import 'package:smerp/widgets/method.dart';
+import '../../methods/pdf_method.dart';
 import '../../widgets/search.dart';
 
 class BankReport extends StatefulWidget {
@@ -14,7 +14,6 @@ class BankReport extends StatefulWidget {
 }
 
 class _BankReportState extends State<BankReport>  with WidgetsBindingObserver{
-  @override
   late Box<Bank?> _box;
   bool isSecondSegmentVisible = false;
   Bank? selectedReport;

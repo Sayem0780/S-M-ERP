@@ -223,7 +223,7 @@ class _LcEntryState extends State<LcEntry> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 print(date);
-                                var box = await Hive.openBox('mbox');
+                                var box = await Hive.openBox<LC?>('mboxo');
                                 var lc = LC(
                                   lcNo: lcNo,
                                   irc: irc,
@@ -234,16 +234,17 @@ class _LcEntryState extends State<LcEntry> {
                                   lcAmount: lcAmount,
                                   bank: bank,
                                 );
-                                var lcIndex = await box.add(lc);
-                                print('LC Index: $lcIndex');
+                                // var lcIndex = await box.add(lc);
+                                await box.add(lc);
+                                // print('LC Index: $lcIndex');
                                 var lcList = box.values.toList();
                                 var positionNumber = lcList.indexOf(lc);
-                                print('Position Number: $positionNumber');
+                                // print('Position Number: $positionNumber');
                                 lc.save();
-                                print(box.name);
-                                print(box.keys);
-                                print(box.length);
-                                box.close();
+                                // print(box.name);
+                                // print(box.keys);
+                                // print(box.length);
+                                // box.close();
                                 if (lc.isInBox) {
                                   Navigator.of(context).pushNamed(ChasisEntry.routeName, arguments: positionNumber as int);
                                 }

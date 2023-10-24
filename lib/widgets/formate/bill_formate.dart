@@ -4,9 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:smerp/models/chassis_model.dart';
 import 'package:smerp/models/pdf_models/pdf_bill.dart';
-import 'package:smerp/widgets/method.dart';
 
-import '../methods/numberToWord.dart';
+import '../../methods/numberToWord.dart';
+import '../../methods/pdf_method.dart';
+
 class BillFormate extends StatefulWidget {
   final Chassis a;
   bool pressed = false;
@@ -25,21 +26,23 @@ class _BillFormateState extends State<BillFormate> {
   TextEditingController branchController = TextEditingController();
   TextEditingController customerController = TextEditingController();
   TextEditingController totalController = TextEditingController();
-  String intro="",address="",bank="",branch="",inWord="",ac="";
-  double bankPay= 0,customer=0,total=0,price = 0;
+  String intro="",address="",bank="",branch="",inWord="",ac="",bankPay='',customer='',total='',price = '';
   final bcode = UniqueKey().toString();
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+  final format = NumberFormat('##,##,##0.00');
   void updateTotal() {
     setState(() {
-      total = bankPay+customer;
+      double a = bankPay==""||bankPay.isEmpty?0:double.parse(bankPay.replaceAll(',', ''));
+      double b = customer==""||customer.isEmpty?0:double.parse(customer.replaceAll(',', ''));
+      double c = a+b;
+      total = format.format(c);
       totalController.text = total.toString();
     });
   }
   void word(){
     setState(() {
-      double a = double.parse(priceController.text.toString());
+      double a = double.parse(price.replaceAll(',', '').toString());
       inWord = convertNumberToWord(a) ;
-      print(inWord);
     });
   }
 
@@ -151,7 +154,9 @@ class _BillFormateState extends State<BillFormate> {
                                 ),
                                 onChanged: (String value) {
                                  setState(() {
-                                   price = double.parse(value);
+                                   priceController.text = format.format(double.parse(value.replaceAll(',', '')));
+                                   priceController.selection = TextSelection.fromPosition(TextPosition(offset: priceController.text.length-3));
+                                   price = priceController.text.toString();
                                  });
                                   word();
                                 },
@@ -186,7 +191,9 @@ class _BillFormateState extends State<BillFormate> {
                                 ),
                                 onChanged: (String value) {
                                  setState(() {
-                                   bankPay = double.parse(value);
+                                   bank_payController.text = format.format(double.parse(value.replaceAll(',', '')));
+                                   bank_payController.selection = TextSelection.fromPosition(TextPosition(offset: bank_payController.text.length-3));
+                                   bankPay = bank_payController.text.toString();
                                  });
                                   updateTotal();
                                 },
@@ -221,7 +228,9 @@ class _BillFormateState extends State<BillFormate> {
                                 ),
                                   onChanged: (String value) {
                                    setState(() {
-                                     customer = double.parse(value);
+                                     customerController.text = format.format(double.parse(value.replaceAll(',', '')));
+                                     customerController.selection = TextSelection.fromPosition(TextPosition(offset: customerController.text.length-3));
+                                     customer = customerController.text.toString();
                                    });
                                     updateTotal();
                                   },
@@ -247,8 +256,9 @@ class _BillFormateState extends State<BillFormate> {
                           TableCell(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Row(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text("Total Paid: "+totalController.text),
                                   Text("Total Price: "+priceController.text),

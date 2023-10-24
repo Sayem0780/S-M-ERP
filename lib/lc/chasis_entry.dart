@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:smerp/lc/lc_continue_screen.dart';
 import 'package:smerp/lc/lc_report_screen.dart';
 import 'package:smerp/models/chassis_model.dart';
 import 'package:smerp/models/lc_model.dart';
@@ -15,8 +14,9 @@ class ChasisEntry extends StatefulWidget {
   State<ChasisEntry> createState() => _ChasisEntryState();
 }
 
-class _ChasisEntryState extends State<ChasisEntry> {
+class _ChasisEntryState extends State<ChasisEntry> with WidgetsBindingObserver{
   final _formKey = GlobalKey<FormState>();
+  bool saved=false;
   String vat = 'Not Given', sold = 'Unsold';
   String name = "",
       cc = "",
@@ -76,6 +76,7 @@ class _ChasisEntryState extends State<ChasisEntry> {
     invoiceBDTController.text = invoice_bdt.toString();
     ttBDTController.text = tt_bdt.toString();
     profitController.text = profit.toString();
+    WidgetsBinding.instance.addObserver(this);
   }
   void updateTTAmount() {
     setState(() {
@@ -131,8 +132,48 @@ class _ChasisEntryState extends State<ChasisEntry> {
   }
 
   @override
+  void dispose() {
+    nameController.dispose();;
+    chassisController.dispose();
+    engineController.dispose();
+    ccController.dispose();
+    colorController.dispose();
+    modelController.dispose();
+    buyingpriceController.dispose();
+    invoiceController.dispose();
+    ttController.dispose();
+    portController.dispose();
+    dutyController.dispose();
+    cnfController.dispose();
+    warfrentController.dispose();
+    otherController.dispose();
+    totalController.dispose();
+    sellController.dispose();
+    profitController.dispose();
+    remarkController.dispose();
+    invoiceRateController.dispose();
+    ttRateController.dispose();
+    invoiceBDTController.dispose();
+    ttBDTController.dispose();
+    kmController.dispose();
+    deliverController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  void chassisAdd(Chassis car, int index) async{
+    // print("under chassis add"+index.toString());
+    Box box = await Hive.openBox<LC?>('mboxo');
+    LC lc = box.getAt(index);
+    lc.chassis.add(car);
+    lc.save();
+    box.put(lc.key, lc);
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     int LcIndex = ModalRoute.of(context)!.settings.arguments as int;
+    print(" Under Build "+LcIndex.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -369,7 +410,7 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 15.0),
                                     child: DropdownButtonFormField<String>(
-                                      value: vat!,
+                                      value: vat,
                                       onChanged: (String? newValue) { // Update the function signature
                                         if (newValue != null) {
                                           setState(() {
@@ -439,13 +480,23 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (String value) {
-                                  value.isNotEmpty
-                                      ? setState(() {
-                                          buying_price = double.parse(value);
-                                        })
-                                      : setState(() {
-                                          buying_price = 0;
-                                        });
+                                  bool isDouble(String value) {
+                                    try {
+                                      double.parse(value);
+                                      return true;
+                                    } catch (e) {
+                                      return false;
+                                    }
+                                  }
+                                  value.isNotEmpty ? setState(() {
+                                    if (isDouble(value)) {
+                                      buying_price = double.parse(value);
+                                    } else {
+                                      buying_price = 0;
+                                    }
+                                  }) : setState(() {
+                                    buying_price = 0;
+                                  });
                                   updateTTAmount();
                                   updateTotal();
                                   updateBeforeDuty();
@@ -481,13 +532,24 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                         border: OutlineInputBorder(),
                                       ),
                                       onChanged: (String value) {
+                                        bool isDouble(String value) {
+                                          try {
+                                            double.parse(value);
+                                            return true;
+                                          } catch (e) {
+                                            return false;
+                                          }
+                                        }
                                         value.isNotEmpty
                                             ? setState(() {
-                                                invoice = double.parse(value);
-                                              })
-                                            : setState(() {
-                                                invoice = 0;
-                                              });
+                                          if (isDouble(value)) {
+                                            invoice = double.parse(value);
+                                          } else {
+                                            invoice = 0;
+                                          }
+                                        }) : setState(() {
+                                          invoice = 0;
+                                        });
                                         updateTTAmount();
                                         updateTotal();
                                         updateBeforeDuty();
@@ -518,14 +580,24 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                         border: OutlineInputBorder(),
                                       ),
                                       onChanged: (String value) {
+                                        bool isDouble(String value) {
+                                          try {
+                                            double.parse(value);
+                                            return true;
+                                          } catch (e) {
+                                            return false;
+                                          }
+                                        }
                                         value.isNotEmpty
                                             ? setState(() {
-                                                invoice_rate =
-                                                    double.parse(value);
-                                              })
-                                            : setState(() {
-                                                invoice_rate = 0;
-                                              });
+                                          if (isDouble(value)) {
+                                            invoice_rate = double.parse(value);
+                                          } else {
+                                            invoice_rate = 0;
+                                          }
+                                        }) : setState(() {
+                                          invoice_rate = 0;
+                                        });
                                         updateTTAmount();
                                         updateTotal();
                                         updateBeforeDuty();
@@ -598,13 +670,24 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                         border: OutlineInputBorder(),
                                       ),
                                       onChanged: (String value) {
+                                        bool isDouble(String value) {
+                                          try {
+                                            double.parse(value);
+                                            return true;
+                                          } catch (e) {
+                                            return false;
+                                          }
+                                        }
                                         value.isNotEmpty
                                             ? setState(() {
-                                                tt_rate = double.parse(value);
-                                              })
-                                            : setState(() {
-                                                tt_rate = 0;
-                                              });
+                                          if (isDouble(value)) {
+                                            tt_rate = double.parse(value);
+                                          } else {
+                                            tt_rate = 0;
+                                          }
+                                        }) : setState(() {
+                                          tt_rate = 0;
+                                        });
                                         updateTTAmount();
                                         updateTotal();
                                         updateBeforeDuty();
@@ -677,15 +760,24 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (String value) {
-                                  if (value.isNotEmpty) {
-                                    setState(() {
-                                      duty = double.parse(value);
-                                    });
-                                  } else {
-                                    setState(() {
-                                      duty = 0;
-                                    });
+                                  bool isDouble(String value) {
+                                    try {
+                                      double.parse(value);
+                                      return true;
+                                    } catch (e) {
+                                      return false;
+                                    }
                                   }
+                                  value.isNotEmpty
+                                      ? setState(() {
+                                    if (isDouble(value)) {
+                                      duty = double.parse(value);
+                                    } else {
+                                      duty = 0;
+                                    }
+                                  }) : setState(() {
+                                    duty = 0;
+                                  });
                                   updateTTAmount();
                                   updateTotal();
                                   updateBeforeDuty();
@@ -716,13 +808,24 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                   border: OutlineInputBorder(),
                                 ),
                                 onChanged: (String value) {
+                                  bool isDouble(String value) {
+                                    try {
+                                      double.parse(value);
+                                      return true;
+                                    } catch (e) {
+                                      return false;
+                                    }
+                                  }
                                   value.isNotEmpty
                                       ? setState(() {
-                                          cnf = double.parse(value);
-                                        })
-                                      : setState(() {
-                                          cnf = 0;
-                                        });
+                                    if (isDouble(value)) {
+                                      cnf = double.parse(value);
+                                    } else {
+                                      cnf = 0;
+                                    }
+                                  }) : setState(() {
+                                    cnf = 0;
+                                  });
                                   updateTTAmount();
                                   updateTotal();
                                   updateBeforeDuty();
@@ -762,13 +865,24 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                         border: OutlineInputBorder(),
                                       ),
                                       onChanged: (String value) {
+                                        bool isDouble(String value) {
+                                          try {
+                                            double.parse(value);
+                                            return true;
+                                          } catch (e) {
+                                            return false;
+                                          }
+                                        }
                                         value.isNotEmpty
                                             ? setState(() {
-                                                warfrent = double.parse(value);
-                                              })
-                                            : setState(() {
-                                                warfrent = 0;
-                                              });
+                                          if (isDouble(value)) {
+                                            warfrent = double.parse(value);
+                                          } else {
+                                            warfrent = 0;
+                                          }
+                                        }) : setState(() {
+                                          warfrent = 0;
+                                        });
                                         updateTTAmount();
                                         updateTotal();
                                         updateBeforeDuty();
@@ -799,13 +913,25 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                         border: OutlineInputBorder(),
                                       ),
                                       onChanged: (String value) {
+                                        bool isDouble(String value) {
+                                          try {
+                                            double.parse(value);
+                                            return true;
+                                          } catch (e) {
+                                            return false;
+                                          }
+                                        }
                                         value.isNotEmpty
                                             ? setState(() {
-                                                others = double.parse(value);
-                                              })
-                                            : setState(() {
-                                                others = 0;
-                                              });
+                                          if (isDouble(value)) {
+                                            others =
+                                                double.parse(value);
+                                          } else {
+                                            others = 0;
+                                          }
+                                        }) : setState(() {
+                                          others = 0;
+                                        });
                                         updateTTAmount();
                                         updateTotal();
                                         updateBeforeDuty();
@@ -864,7 +990,6 @@ class _ChasisEntryState extends State<ChasisEntry> {
                                           return false;
                                         }
                                       }
-
                                       value.isNotEmpty
                                           ? setState(() {
                                               if (isDouble(value)) {
@@ -932,45 +1057,37 @@ class _ChasisEntryState extends State<ChasisEntry> {
                 ),
               ),
               MaterialButton(
-                onPressed: () async {
+                onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    var box = await Hive.openBox('mbox');
-                    LC lc = box.getAt(LcIndex);
-                    box.put(lc.key, lc);
-                    var car = Chassis(
-                        name: name,
-                        cc: cc,
-                        chassis: chassis,
-                        engineNo: engineNo,
-                        color: color,
-                        model: model,
-                        remark: remark,
-                        buyingPrice: buying_price,
-                        invoice: invoice,
-                        ttAmount: tt_amount,
-                        portCost: port_cost,
-                        duty: duty,
-                        cnf: cnf,
-                        warfrent: warfrent,
-                        others: others,
-                        total: total,
-                        sellingPrice: selling_price,
-                        profit: profit,
-                        invoiceRate: invoice_rate,
-                        invoiceBdt: invoice_bdt,
-                        ttRate: tt_rate,
-                        ttBdt: tt_bdt,
-                        delivery_date: deliver_date,
-                        sold: sold,
-                        km: km,
-                        vat: vat,
-                    );
-                    lc.chassis.add(car);
-                    lc.save();
-                    bool isCarAdded = lc.chassis.contains(car);
-                    box.close();
-                    if (isCarAdded)
-                      Navigator.of(context).pushNamed(LcReportScreen.routeName,arguments: LcIndex as int);
+                   chassisAdd(Chassis(
+                     name: name,
+                     cc: cc,
+                     chassis: chassis,
+                     engineNo: engineNo,
+                     color: color,
+                     model: model,
+                     remark: remark,
+                     buyingPrice: buying_price,
+                     invoice: invoice,
+                     ttAmount: tt_amount,
+                     portCost: port_cost,
+                     duty: duty,
+                     cnf: cnf,
+                     warfrent: warfrent,
+                     others: others,
+                     total: total,
+                     sellingPrice: selling_price,
+                     profit: profit,
+                     invoiceRate: invoice_rate,
+                     invoiceBdt: invoice_bdt,
+                     ttRate: tt_rate,
+                     ttBdt: tt_bdt,
+                     delivery_date: deliver_date,
+                     sold: sold,
+                     km: km,
+                     vat: vat,
+                   ), LcIndex);
+                   Navigator.of(context).pushNamed(LcReportScreen.routeName,arguments: LcIndex as int);
                   } else {
                     showDialog(
                       context: context,
@@ -992,8 +1109,8 @@ class _ChasisEntryState extends State<ChasisEntry> {
                     );
                   }
                 },
-                color: Theme.of(context).primaryColorDark,
-                child: Text('Next'),
+                color: Colors.amber,
+                child: Text('Save'),
               ),
             ],
           ),

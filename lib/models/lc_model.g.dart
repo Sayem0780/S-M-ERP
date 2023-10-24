@@ -8,7 +8,7 @@ part of 'lc_model.dart';
 
 class LCAdapter extends TypeAdapter<LC> {
   @override
-  final int typeId = 1;
+  final int typeId = 7;
 
   @override
   LC read(BinaryReader reader) {

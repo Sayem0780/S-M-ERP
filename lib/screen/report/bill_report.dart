@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
 
+import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_bill.dart';
-import '../../models/pdf_models/pdf_cutomer.dart';
-import '../../widgets/method.dart';
 import '../../widgets/search.dart';
 
 class BillReport extends StatefulWidget {

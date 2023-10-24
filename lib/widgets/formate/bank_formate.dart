@@ -5,10 +5,10 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:smerp/models/chassis_model.dart';
-import 'package:smerp/widgets/method.dart';
 
+import '../../methods/numberToWord.dart';
+import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_bank.dart';
-import '../methods/numberToWord.dart';
 
 class BankFormate extends StatefulWidget {
   final Chassis a;
@@ -31,9 +31,14 @@ class _BankFormateState extends State<BankFormate> {
   final bacode = UniqueKey().toString();
   String currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
+  String formatNumber(int number) {
+    final format = NumberFormat('##,##,###');
+    return format.format(number);
+  }
+  
   void word(){
     setState(() {
-      double a = bank_payController.text.isEmpty?0:double.parse(bank_payController.text.trim().toString());
+      double a = bank_payController.text.isEmpty?0:double.parse(bank_payController.text.replaceAll(',', '').trim().toString());
       inWord = convertNumberToWord(a) ;
     });
   }
@@ -47,8 +52,6 @@ class _BankFormateState extends State<BankFormate> {
     await box.add(customData); // Add the customData object to the box
 
     await box.close(); // Close the box when done
-
-    print('Data saved successfully!');
   }
 
   @override
@@ -148,7 +151,9 @@ class _BankFormateState extends State<BankFormate> {
       ),
     );
   }
-  TableRow InputItem(String sl,String type,String item,TextEditingController cnt,{int line = 1}) {
+
+  TableRow InputItem(String sl, String type, String item, TextEditingController cnt, {int line = 1}) {
+    final format = NumberFormat('##,##,##0.00');
     return TableRow(
       children: [
         TableCell(
@@ -169,21 +174,26 @@ class _BankFormateState extends State<BankFormate> {
             child: TextFormField(
               controller: cnt,
               maxLines: line,
-              keyboardType: TextInputType.multiline,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
               ),
               onChanged: (String value) {
                 setState(() {
                   if (type == 'Price') {
-                    price = value;
+                    // Update the controller's text with the formatted price
+                    cnt.text = format.format(double.parse(value.replaceAll(',', '')));
+                    cnt.selection = TextSelection.fromPosition(TextPosition(offset: cnt.text.length-3));
+                     price = cnt.text.toString();
                   } else if (type == 'Amount Paid By Bank') {
-                    bankPay = value;
+                    cnt.text = format.format(double.parse(value.replaceAll(',', '')));
+                    cnt.selection = TextSelection.fromPosition(TextPosition(offset: cnt.text.length-3));
+                    bankPay = cnt.text.toString();
                   } else if (type == 'Cheque No or P/O No') {
                     po = value;
                   } else if (type == 'Bank') {
                     bank = value;
-                  }else if (type == 'Branch') {
+                  } else if (type == 'Branch') {
                     branch = value;
                   }
                 });
@@ -195,4 +205,5 @@ class _BankFormateState extends State<BankFormate> {
       ],
     );
   }
+
 }

@@ -8,7 +8,7 @@ part of 'pdf_bank.dart';
 
 class BankAdapter extends TypeAdapter<Bank> {
   @override
-  final int typeId = 4;
+  final int typeId = 0;
 
   @override
   Bank read(BinaryReader reader) {

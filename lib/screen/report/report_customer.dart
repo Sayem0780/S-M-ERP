@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
 
+import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_cutomer.dart';
-import '../../widgets/method.dart';
 import '../../widgets/search.dart';
 
 class CustomerReport extends StatefulWidget {
-  static const routeName="/customer";
+  static const routeName="/customer_re";
   const CustomerReport({Key? key}) : super(key: key);
 
   @override
@@ -15,7 +15,6 @@ class CustomerReport extends StatefulWidget {
 }
 
 class _CustomerReportState extends State<CustomerReport>  with WidgetsBindingObserver{
-  @override
   late Box<Custom?> _box;
   bool isSecondSegmentVisible = false;
   Custom? selectedReport;
@@ -24,13 +23,13 @@ class _CustomerReportState extends State<CustomerReport>  with WidgetsBindingObs
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this as WidgetsBindingObserver);
+    WidgetsBinding.instance.addObserver(this);
     openBox();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this as WidgetsBindingObserver);
+    WidgetsBinding.instance.removeObserver(this);
     _box.close();
     super.dispose();
   }
@@ -70,9 +69,10 @@ class _CustomerReportState extends State<CustomerReport>  with WidgetsBindingObs
     });
   }
   TextEditingController cNoController = TextEditingController();
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Customer"),centerTitle: true,),
+      appBar: AppBar(title: const Text("Customer"),centerTitle: true,),
       body: Container(
         child: customDataList.isNotEmpty?Container(
           child: Row(
@@ -80,7 +80,7 @@ class _CustomerReportState extends State<CustomerReport>  with WidgetsBindingObs
               Expanded(
                 child: Column(
                   children: [
-                    SizedBox(height: 20,),
+                    const SizedBox(height: 20,),
                     SearchWidget(cNoController: cNoController, searchChassis: searchChassis),
                     Expanded(
                       child: GridView.builder(
@@ -105,18 +105,18 @@ class _CustomerReportState extends State<CustomerReport>  with WidgetsBindingObs
                               color: selectedListTileIndex == index ? Colors.amber.shade500 : null,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(
+                                side: const BorderSide(
                                   width: 2,
                                   color: Colors.black,
                                 ),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(10.0),
+                                padding: const EdgeInsets.all(10.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Chassis NO: ${customData!.a.name}'),
-                                    Text('Delivery Date: ${customData!.a.chassis}'),
+                                    Text('Delivery Date: ${customData.a.chassis}'),
                                   ],
                                 ),
                               ),
@@ -136,7 +136,7 @@ class _CustomerReportState extends State<CustomerReport>  with WidgetsBindingObs
               )
             ],
           ),
-        ):Text("No Data Found"),
+        ):const Text("No Data Found"),
       )
       ,
     );
