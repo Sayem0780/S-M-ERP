@@ -39,7 +39,8 @@ dependencies:
   printing: ^5.10.3
   path_provider: ^2.0.9
   path_provider_windows: ^2.1.7
-
+  http: ^1.1.0
+  provider: ^6.1.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -50,6 +51,7 @@ dev_dependencies:
     sdk: flutter
   hive_generator: ^2.0.0
   build_runner: ^2.4.5
+  shared_preferences: ^2.2.2
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -69,6 +71,14 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/cover-page/images/vector-top.png
+    - assets/cover-page/images/circle-bottem.png
+    - assets/cover-page/images/cover-circle.png
+    - assets/cover-page/images/arrow-vector.png
+    - assets/cover-page/images/arrow-vector-dX6.png
+    - assets/cover-page/images/vector-top-udi.png
+    - assets/images/vector-11-dAZ.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

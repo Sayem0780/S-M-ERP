@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 
 import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_bill.dart';
+import '../../providers/contents.dart';
 import '../../widgets/search.dart';
 
 class BillReport extends StatefulWidget {
@@ -51,8 +53,10 @@ class _BillReportState extends State<BillReport>  with WidgetsBindingObserver{
   Future<void> openBox() async {
     _box = await Hive.openBox<Bill?>('billBox'); // Call searchUnsold after _box is initialized
     setState(() {
-      customDataList = _box.values.toList();
-      itemList=_box.values.toList();
+      // customDataList = _box.values.toList();
+      // itemList=_box.values.toList();
+      customDataList =  Provider.of<Contents>(context,listen: false).billdata.toList();
+      itemList =  Provider.of<Contents>(context,listen: false).billdata.toList();
     });
 
 
@@ -70,6 +74,7 @@ class _BillReportState extends State<BillReport>  with WidgetsBindingObserver{
     });
   }
   TextEditingController cNoController = TextEditingController();
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Bill Report"),centerTitle: true,),

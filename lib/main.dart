@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/lc/lc_entey.dart';
 import 'package:smerp/lc/lc_report_screen.dart';
 import 'package:smerp/models/chassis_model.dart';
@@ -9,6 +10,10 @@ import 'package:smerp/models/pdf_models/pdf_bill.dart';
 import 'package:smerp/models/pdf_models/pdf_challan.dart';
 import 'package:smerp/models/pdf_models/pdf_cutomer.dart';
 import 'package:smerp/models/pdf_models/pdf_quotation.dart';
+import 'package:smerp/providers/auth.dart';
+import 'package:smerp/providers/contents.dart';
+import 'package:smerp/screen/defautls/login.dart';
+import 'package:smerp/screen/defautls/signup.dart';
 import 'package:smerp/screen/report/sale_customer_report.dart';
 import 'package:smerp/screen/verticals/booked.dart';
 import 'package:smerp/screen/verticals/customer_sale_screen.dart';
@@ -42,7 +47,7 @@ void main() async{
   final appDirectory = await path_provider.getApplicationDocumentsDirectory();
   // // Hive.init(appDirectory.path);
   // var path = Directory(appDirectory.path);
-  print(appDirectory.path);
+  // print(appDirectory.path);
   Hive.init(appDirectory.path);
   Hive.registerAdapter(ChassisAdapter());
   Hive.registerAdapter(LCAdapter());
@@ -59,34 +64,51 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-        primaryColor: Colors.purpleAccent,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (context) => Contents(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Auth(),
+          child: MyApp(),
+        ),
+      ],
+    child: Consumer<Auth>(
+
+      builder: (ctx, auth, child) =>MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.purple,
+          primaryColor: Colors.purpleAccent,
+        ),
+        // initialRoute: auth.isAuth?SignUp.routeName:HomePage.routeName,
+        // home: auth.isAuth?HomePage():LogInPage(),
+        home: HomePage(),
+        routes: {
+          SignUp.routeName:(context)=> const SignUp(),
+          LogInPage.routeName:(context)=> const LogInPage(),
+          HomePage.routeName:(context)=> const HomePage(),
+          ChasisEntry.routeName:(context)=>const ChasisEntry(),
+          // LcContinueScreen.routeName:(context)=>const LcContinueScreen(),
+          LcEntry.routeName:(context)=>const LcEntry(),
+          LcReportScreen.routeName:(context)=> const LcReportScreen(),
+          UnsoldScreen.routeName:(context)=>const UnsoldScreen(),
+          BookedScreen.routeName:(context)=>const BookedScreen(),
+          NotGivenVatScreen.routeName:(context)=>const NotGivenVatScreen(),
+          QuotationScreen.routeName:(context)=>const QuotationScreen(),
+          CustomerReport.routeName:(context)=>const CustomerReport(),
+          BillReport.routeName:(context)=>const BillReport(),
+          BankReport.routeName:(context)=>const BankReport(),
+          ChallanReport.routeName:(context)=>const ChallanReport(),
+          ReportSelectionPage.routeName:(context)=>const ReportSelectionPage(),
+          QuotationReport.routeName:(context)=>const QuotationReport(),
+          CustomerSealScreen.routeName:(context)=>const CustomerSealScreen(),
+          CustomerReport.routeName:(context)=> const CustomerReport(),
+          SaleCustomerReport.routeName:(context)=> const SaleCustomerReport(),
+        },
       ),
-      initialRoute: HomePage.routeName,
-      routes: {
-        HomePage.routeName:(context)=> const HomePage(),
-        ChasisEntry.routeName:(context)=>const ChasisEntry(),
-        // LcContinueScreen.routeName:(context)=>const LcContinueScreen(),
-        LcEntry.routeName:(context)=>const LcEntry(),
-        LcReportScreen.routeName:(context)=> const LcReportScreen(),
-        UnsoldScreen.routeName:(context)=>const UnsoldScreen(),
-        BookedScreen.routeName:(context)=>const BookedScreen(),
-        NotGivenVatScreen.routeName:(context)=>const NotGivenVatScreen(),
-        QuotationScreen.routeName:(context)=>const QuotationScreen(),
-        CustomerReport.routeName:(context)=>const CustomerReport(),
-        BillReport.routeName:(context)=>const BillReport(),
-        BankReport.routeName:(context)=>const BankReport(),
-        ChallanReport.routeName:(context)=>const ChallanReport(),
-        ReportSelectionPage.routeName:(context)=>const ReportSelectionPage(),
-        QuotationReport.routeName:(context)=>const QuotationReport(),
-        CustomerSealScreen.routeName:(context)=>const CustomerSealScreen(),
-        CustomerReport.routeName:(context)=> const CustomerReport(),
-        SaleCustomerReport.routeName:(context)=> const SaleCustomerReport(),
-      },
-    );
+    ),);
   }
 }

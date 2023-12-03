@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 
 
 import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_challan.dart';
+import '../../providers/contents.dart';
 import '../../widgets/search.dart';
 
 class ChallanReport extends StatefulWidget {
@@ -52,8 +54,10 @@ class _ChallanReportState extends State<ChallanReport>  with WidgetsBindingObser
   Future<void> openBox() async {
     _box = await Hive.openBox<Challan?>('challanBox'); // Call searchUnsold after _box is initialized
     setState(() {
-      customDataList = _box.values.toList();
-      itemList=_box.values.toList();
+      // customDataList = _box.values.toList();
+      // itemList=_box.values.toList();
+      customDataList =  Provider.of<Contents>(context,listen: false).challandata.toList();
+      itemList =  Provider.of<Contents>(context,listen: false).challandata.toList();
     });
 
 

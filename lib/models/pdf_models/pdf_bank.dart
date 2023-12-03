@@ -39,5 +39,32 @@ class Bank extends HiveObject{
     required this.bacode,
     required this.currentDate
   });
+  Map<String, dynamic> toJson() {
+    return {
+      'a': a.toJson(), // Assuming a.toJson() returns a Map<String, dynamic>
+      'intro': intro,
+      'ac': ac,
+      'price': price.toString(),
+      'bank': bank,
+      'branch': branch,
+      'bankPay': bankPay,
+      'po': po,
+      'inWord': inWord,
+      'bacode': bacode,
+      'currentDate': currentDate
+    };
+  }
 
+  Bank.fromJson(Map<String, dynamic> json,)
+      : a = Chassis.fromJson(json['a']),
+        intro = json['intro'],
+        ac = json['ac'],
+        price= json['price'],
+        bank= json['bank'],
+        branch= json['branch'],
+        bankPay=json['bankPay'],
+        po=json['po'],
+        inWord=json['inWord'],
+        bacode=json['bacode'],
+        currentDate=json['currentDate'];
 }

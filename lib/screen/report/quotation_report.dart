@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/models/pdf_models/pdf_quotation.dart';
 import '../../methods/pdf_method.dart';
+import '../../providers/contents.dart';
 import '../../widgets/search.dart';
 
 class QuotationReport extends StatefulWidget {
@@ -49,11 +51,11 @@ class _QuotationReportState extends State<QuotationReport>  with WidgetsBindingO
   Future<void> openBox() async {
     _box = await Hive.openBox<Quotation?>('quotatioBox'); // Call searchUnsold after _box is initialized
     setState(() {
-      customDataList = _box.values.toList();
-      itemList=_box.values.toList();
+      // customDataList = _box.values.toList();
+      // itemList=_box.values.toList();
+      customDataList =  Provider.of<Contents>(context,listen: false).quotationdata.toList();
+      itemList =  Provider.of<Contents>(context,listen: false).quotationdata.toList();
     });
-
-
   }
   void searchChassis(String cNo) {
     String chassisNO = cNo.toLowerCase(); // Convert the search text to lowercase for case-insensitive comparison

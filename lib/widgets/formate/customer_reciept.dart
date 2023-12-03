@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/models/chassis_model.dart';
 
 import '../../methods/numberToWord.dart';
 import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_cutomer.dart';
+import '../../providers/contents.dart';
 
 
 class CustomerRecieptFormate extends StatefulWidget {
@@ -52,7 +54,7 @@ class _CustomerRecieptFormateState extends State<CustomerRecieptFormate> {
     );
 
     await box.add(customData); // Add the customData object to the box
-
+    Provider.of<Contents>(context,listen: false).creatCustomerReceipt(customData);
     await box.close(); // Close the box when done
 
     print('Data saved successfully!');

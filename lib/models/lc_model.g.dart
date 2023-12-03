@@ -8,7 +8,7 @@ part of 'lc_model.dart';
 
 class LCAdapter extends TypeAdapter<LC> {
   @override
-  final int typeId = 7;
+  final int typeId = 8;
 
   @override
   LC read(BinaryReader reader) {
@@ -24,14 +24,15 @@ class LCAdapter extends TypeAdapter<LC> {
       chassis: (fields[4] as List).cast<Chassis>(),
       date: fields[5] as String,
       lcAmount: fields[6] as String,
-      bank: fields[7] as dynamic,
+      bank: fields[7] as String,
+      profit: fields[8] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, LC obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.lcNo)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class LCAdapter extends TypeAdapter<LC> {
       ..writeByte(6)
       ..write(obj.lcAmount)
       ..writeByte(7)
-      ..write(obj.bank);
+      ..write(obj.bank)
+      ..writeByte(8)
+      ..write(obj.profit);
   }
 
   @override

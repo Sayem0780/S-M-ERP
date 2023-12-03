@@ -2,6 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:smerp/providers/contents.dart';
 import 'package:smerp/screen/home_page.dart';
 import 'package:smerp/lc/chasis_entry.dart';
 import 'package:smerp/lc/lc_entey.dart';
@@ -24,12 +26,15 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
   Chassis? selectedChassis;
   late Box<LC?> box;
   List<dynamic> lcList = [];
+  List<LC> remotelcList = [];
   late List<bool> tappedList;
+  late List<bool> remotetappedList;
   bool isEditable = false;
   bool isLCEditable = false;
   bool isSecondSegmentVisible = false;
   bool isThirdSegmentVisible = false;
-  late Map<int, LC?> selectedLcMap; // Map to store selected LC for each index
+  late Map<int, LC?> selectedLcMap;// Map to store selected LC for each index
+  late Map<int, LC?> remoteselectedLcMap;
   int? tapLCIndex;
   int? selectedListTileIndex;
   int? tappedChassisIndex;
@@ -68,29 +73,36 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
     } else if (state == AppLifecycleState.resumed) {
       // Open the box when the app is resumed or the user enters the page
       openBox();
+      print("Changed");
     }
   }
 
   Future<void> openBox() async {
     box = await Hive.openBox<LC?>('mboxo');
-    store();
+    // store();
+    remoteStore();
   }
 
-  void store(){
+  void remoteStore(){
     setState(() {
-      lcList = box.values.toList();
-      tappedList = List<bool>.filled(lcList.length, false);
-      selectedLcMap = {};// Initialize the selected LC map
+     lcList = Provider.of<Contents>(context,listen: false).postdata;
+     tappedList = List<bool>.filled(lcList.length, false);
+     selectedLcMap = {};// Initialize the selected LC map
     });
   }
+  // void store(){
+  //   setState(() {
+  //     lcList = box.values.toList();
+  //     tappedList = List<bool>.filled(lcList.length, false);
+  //     selectedLcMap = {};// Initialize the selected LC map
+  //   });
+  // }
 
 
   void searchLC(String lc) {
     hideThirdSegment();
     String lcNo = lc.toLowerCase(); // Convert the search text to lowercase for case-insensitive comparison
-
-    List matchingLCs = box.values.toList().where((lc) => lc!.lcNo.toLowerCase().contains(lcNo)).toList();
-
+    List matchingLCs = Provider.of<Contents>(context,listen: false).postdata.where((lc) => lc!.lcNo.toLowerCase().contains(lcNo)).toList();
     setState(() {
       if (matchingLCs.isNotEmpty) {
         selectedLcMap.clear();
@@ -138,8 +150,11 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
 
   @override
   Widget build(BuildContext context) {
+    Contents lcedit = Provider.of<Contents>(context);
+
     return WillPopScope(
       onWillPop: ()async{
+        Navigator.of(context).pushNamed(HomePage.routeName);
         Navigator.pushNamedAndRemoveUntil(
           context,
           HomePage.routeName,
@@ -207,10 +222,11 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                           tappedChassisIndex = null;
                         }
                         // checker = null;
+
                         selectedListTileIndex = index;
+                        Provider.of<Contents>(context,listen: false).updateCurrentRootKey(selectedListTileIndex.toString());
                         tappedList[index] = true;
                         tapLCIndex = selectedListTileIndex;
-                        // tapLCIndex = index;
                         selectedLcMap[index] = lc;
                         isSecondSegmentVisible = true;
                         hideThirdSegment();
@@ -294,7 +310,6 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                             ),
                             Row(
                               children: [
-
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: (){
@@ -309,9 +324,12 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                                     setState(() {
                                       isLCEditable = false;
                                     });
+                                    lcedit.editLcSupplier(selectedLcMap[tapLCIndex]!,lcedit.postkey[tapLCIndex!],);
+                                    lcedit.editLcIrc(selectedLcMap[tapLCIndex]!,lcedit.postkey[tapLCIndex!],);
+                                    lcedit.editLcBank(selectedLcMap[tapLCIndex]!,lcedit.postkey[tapLCIndex!],);
+                                    lcedit.editLcShipment(selectedLcMap[tapLCIndex]!,lcedit.postkey[tapLCIndex!],);
                                   },
                                 ),
-
                               ],
                             )
                           ],
@@ -341,8 +359,9 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                                           ? TextFormField(
                                         initialValue: selectedLcMap[tapLCIndex]?.supplier,
                                         onChanged: (newValue) {
+                                          // lcedit.keystore.values.elementAt(tapLCIndex!)[tappedChassisIndex!]
                                           selectedLcMap[tapLCIndex]?.supplier = newValue;
-                                          box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
+                                          // box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
                                         },
                                       )
                                           :Text(selectedLcMap[tapLCIndex]?.supplier??"")),
@@ -352,7 +371,7 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                                         initialValue: selectedLcMap[tapLCIndex]?.shipment,
                                         onChanged: (newValue) {
                                           selectedLcMap[tapLCIndex]?.shipment = newValue;
-                                          box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
+                                          // box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
                                         },
                                       )
                                           :Text(selectedLcMap[tapLCIndex]?.shipment??"")),
@@ -362,7 +381,7 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                                         initialValue: selectedLcMap[tapLCIndex]?.irc,
                                         onChanged: (newValue) {
                                           selectedLcMap[tapLCIndex]?.irc = newValue;
-                                          box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
+                                          // box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
                                         },
                                       )
                                           :Text(selectedLcMap[tapLCIndex]?.irc??"")),
@@ -372,7 +391,7 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                                         initialValue: selectedLcMap[tapLCIndex]?.bank,
                                         onChanged: (newValue) {
                                           selectedLcMap[tapLCIndex]?.bank = newValue;
-                                          box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
+                                          // box.put(lcList[tapLCIndex!].key, lcList[tapLCIndex!]);
                                         },
                                       )
                                           :Text(selectedLcMap[tapLCIndex]?.bank??"")),
@@ -401,7 +420,7 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                                       // Return the box with add icon for the first item
                                       return GestureDetector(
                                         onTap: () {
-                                          Navigator.of(context).pushNamed(ChasisEntry.routeName,arguments: tapLCIndex as int);
+                                          Navigator.of(context).pushNamed(ChasisEntry.routeName,arguments: [tapLCIndex as int,selectedLcMap[tapLCIndex]?.lcAmount,selectedLcMap[tapLCIndex]?.profit]);
                                         },
                                         child: Card(
                                           elevation: 4,
@@ -529,6 +548,7 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                                       setState(() {
                                         isEditable = false;
                                       });
+                                      lcedit.editChassis(selectedChassis!, lcedit.postkey[tapLCIndex!], lcedit.keystore.values.elementAt(tapLCIndex!)[tappedChassisIndex!]);
                                     },
                                   ),
 
@@ -536,7 +556,6 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                               )
                             ],
                           ),
-
                           DataTable(
                             columnSpacing: isEditable?12:55,
                             columns: const [
@@ -852,7 +871,8 @@ class _LcReportScreenState extends State<LcReportScreen> with WidgetsBindingObse
                 ),
               ),
           ],
-        ):const Center(child: Text("No Lc Data found"),),
+        ):
+        const Center(child: Text("No Lc Data found"),),
         floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
         floatingActionButton: FloatingActionButton(
           onPressed: (){

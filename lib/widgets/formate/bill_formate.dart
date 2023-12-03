@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/models/chassis_model.dart';
 import 'package:smerp/models/pdf_models/pdf_bill.dart';
 
 import '../../methods/numberToWord.dart';
 import '../../methods/pdf_method.dart';
+import '../../providers/contents.dart';
 
 class BillFormate extends StatefulWidget {
   final Chassis a;
@@ -53,6 +55,7 @@ class _BillFormateState extends State<BillFormate> {
     final customData = Bill(a: widget.a, intro: intro, ac: ac, price: price.toString(), bank: bank, bankPay: bankPay.toString(), customer: customer.toString(), total: total.toString(), inWord: inWord, bcode: bcode, currentDate: currentDate);
 
     await box.add(customData); // Add the customData object to the box
+    Provider.of<Contents>(context,listen: false).creatBill(customData);
 
     await box.close(); // Close the box when done
 

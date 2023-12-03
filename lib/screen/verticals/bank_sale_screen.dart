@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/widgets/formate/bank_formate.dart';
 import 'package:smerp/widgets/formate/bill_formate.dart';
 import 'package:smerp/widgets/formate/challan_formate.dart';
@@ -9,6 +10,7 @@ import 'package:smerp/widgets/search.dart';
 
 import '../../models/chassis_model.dart';
 import '../../models/lc_model.dart';
+import '../../providers/contents.dart';
 
 class QuotationScreen extends StatefulWidget {
   static const routeName ='/quotation';
@@ -62,7 +64,8 @@ class _QuotationScreenState extends State<QuotationScreen> with WidgetsBindingOb
 
   void store() {
     List<Chassis> b = [];
-    List<LC?> matchingLCs = _box.values.toList();
+    // List<LC?> matchingLCs = _box.values.toList();//use when it comes about local database
+    List<LC?> matchingLCs = Provider.of<Contents>(context,listen: false).postdata.toList();
     for (int i = 0; i < matchingLCs.length; i++) {
       List<Chassis> a = matchingLCs[i]!.chassis.toList();
       for (int j = 0; j < a.length; j++) {

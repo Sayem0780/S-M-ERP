@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/models/chassis_model.dart';
 
 import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_challan.dart';
+import '../../providers/contents.dart';
 
 class ChallanFormate extends StatefulWidget {
   final Chassis a;
@@ -32,7 +34,7 @@ class _ChallanFormateState extends State<ChallanFormate> {
     final customData = Challan(a: widget.a, intro: intro, ac: ac, tyre: tyre,ccode: ccode, currentDate: currentDate);
 
     await box.add(customData); // Add the customData object to the box
-
+    Provider.of<Contents>(context,listen: false).creatChallan(customData);
     await box.close(); // Close the box when done
 
     print('Data saved successfully!');

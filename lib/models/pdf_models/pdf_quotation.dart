@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:smerp/models/chassis_model.dart';
 part 'pdf_quotation.g.dart';
-@HiveType(typeId: 0)
+@HiveType(typeId: 5)
 class Quotation extends HiveObject{
   @HiveField(0)
   final Chassis a;
@@ -32,4 +32,31 @@ class Quotation extends HiveObject{
     required this.qcode,
     required this.currentDate
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'a': a.toJson(), // Assuming a.toJson() returns a Map<String, dynamic>
+      'intro': intro,
+      'ac': ac,
+      'fittings': fittings,
+      'validity': validity,
+      'price': price.toString(),
+      'payment_method': payment_method,
+      'qcode': qcode,
+      'currentDate': currentDate
+    };
+  }
+
+  Quotation.fromJson(Map<String, dynamic> json)
+      : a = Chassis.fromJson(json['a']),
+        intro = json['intro'],
+        ac = json['ac'],
+        fittings = json['fittings'],
+        validity = json['validity'],
+        price = json['price'],
+        payment_method = json['payment_method'],
+        qcode = json['qcode'],
+        currentDate = json['currentDate'];
+
+
 }

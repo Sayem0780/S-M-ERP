@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:smerp/models/chassis_model.dart';
 part 'pdf_sale_customer.g.dart';
-@HiveType(typeId: 0)
+@HiveType(typeId: 6)
 class SaleCustom extends HiveObject{
   @HiveField(0)
   final Chassis a;
@@ -48,4 +48,38 @@ class SaleCustom extends HiveObject{
     required this.tyre
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'a': a.toJson(), // Assuming a.toJson() returns a Map<String, dynamic>
+      'name': name,
+      'intro': intro,
+      'price': price.toString(),
+      'address': address,
+      'phone': phone,
+      'customerPay': customerPay,
+      'inWord': inWord,
+      'balance': balance,
+      'currentDate': currentDate,
+      'cheque':cheque,
+      'bank':bank,
+      'branch':branch,
+      'tyre':tyre,
+    };
+  }
+
+  SaleCustom.fromJson(Map<String, dynamic> json,)
+      : a = Chassis.fromJson(json['a']),
+        name = json['name'],
+        intro = json['intro'],
+        price= json['price'],
+        address= json['address'],
+        phone=json['phone'],
+        customerPay=json['customerPay'],
+        inWord=json['inWord'],
+        balance=json['balance'],
+        currentDate=json['currentDate'],
+        cheque=json['cheque'],
+        bank=json['bank'],
+        branch=json['branch'],
+        tyre=json['tyre'];
 }

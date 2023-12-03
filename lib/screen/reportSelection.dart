@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/screen/report/bank_report.dart';
 import 'package:smerp/screen/report/bill_report.dart';
 import 'package:smerp/screen/report/challan_report.dart';
 import 'package:smerp/screen/report/quotation_report.dart';
 import 'package:smerp/screen/report/report_customer.dart';
 import 'package:smerp/screen/report/sale_customer_report.dart';
+
+import '../providers/contents.dart';
 
 
 class ReportSelectionPage extends StatefulWidget {
@@ -21,6 +24,12 @@ class _ReportSelectionPageState extends State<ReportSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<Contents>(context,listen: false).fetchQuotation();
+    Provider.of<Contents>(context,listen: false).fetchChallan();
+    Provider.of<Contents>(context,listen: false).fetchBill();
+    Provider.of<Contents>(context,listen: false).fetchBankReceipt();
+    Provider.of<Contents>(context,listen: false).fetchCustomerReceipt();
+    Provider.of<Contents>(context,listen: false).fetchDirectCustomerReceipt();
     return Scaffold(
       appBar: AppBar(title: Text('SM Automobile'),centerTitle: true,),
       body: Center(

@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/models/chassis_model.dart';
 
 import '../../methods/numberToWord.dart';
 import '../../methods/pdf_method.dart';
 import '../../models/pdf_models/pdf_bank.dart';
+import '../../providers/contents.dart';
 
 class BankFormate extends StatefulWidget {
   final Chassis a;
@@ -50,7 +52,7 @@ class _BankFormateState extends State<BankFormate> {
     final customData = Bank(a: widget.a, intro: intro, ac: ac, price: price.toString(), bank: bank,branch: branch, bankPay: bankPay.toString(), po:po, inWord: inWord, bacode: bacode, currentDate: currentDate);
 
     await box.add(customData); // Add the customData object to the box
-
+    Provider.of<Contents>(context,listen: false).creatBankReceipt(customData);
     await box.close(); // Close the box when done
   }
 

@@ -2,8 +2,8 @@ import 'package:hive/hive.dart';
 
 import '../chassis_model.dart';
 part 'pdf_bill.g.dart';
-@HiveType(typeId: 0)
-class Bill extends HiveObject{
+@HiveType(typeId: 1)
+class Bill extends HiveObject {
   @HiveField(0)
   final Chassis a;
   @HiveField(1)
@@ -26,6 +26,7 @@ class Bill extends HiveObject{
   final String bcode;
   @HiveField(10)
   final dynamic currentDate;
+
   Bill({
     required this.a,
     required this.intro,
@@ -40,4 +41,32 @@ class Bill extends HiveObject{
     required this.currentDate
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'a': a.toJson(), // Assuming a.toJson() returns a Map<String, dynamic>
+      'intro': intro,
+      'ac': ac,
+      'price': price.toString(),
+      'bank': bank,
+      'bankPay': bankPay,
+      'customer': customer,
+      'total': total,
+      'inWord':inWord,
+      'bcode': bcode,
+      'currentDate': currentDate
+    };
+  }
+
+  Bill.fromJson(Map<String, dynamic> json,)
+      : a = Chassis.fromJson(json['a']),
+        intro = json['intro'],
+        ac = json['ac'],
+        price= json['price'],
+        bank= json['bank'],
+        bankPay=json['bankPay'],
+        customer=json['customer'],
+        total=json['total'],
+        inWord=json['inWord'],
+        bcode=json['bcode'],
+        currentDate=json['currentDate'];
 }

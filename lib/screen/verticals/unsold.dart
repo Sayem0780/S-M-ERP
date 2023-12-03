@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/screen/home_page.dart';
 import 'package:smerp/models/chassis_model.dart';
 
 import '../../models/lc_model.dart';
+import '../../providers/contents.dart';
 
 class UnsoldScreen extends StatefulWidget {
   static const routeName = '/unsold';
@@ -55,7 +57,8 @@ class _UnsoldScreenState extends State<UnsoldScreen>
 
   void searchUnsold() {
     List<Chassis> b = [];
-    List<LC?> matchingLCs = _box.values.toList();
+    // List<LC?> matchingLCs = _box.values.toList();
+    List<LC?> matchingLCs = Provider.of<Contents>(context,listen: false).postdata.toList();
     for (int i = 0; i < matchingLCs.length; i++) {
       List<Chassis> a = matchingLCs[i]!.chassis.toList();
       for (int j = 0; j < a.length; j++) {
@@ -109,7 +112,8 @@ class _UnsoldScreenState extends State<UnsoldScreen>
   }
 
   LC? findLCForChassis(Chassis chassis) {
-    List<LC?> matchingLCs = _box.values.toList();
+    // List<LC?> matchingLCs = _box.values.toList();
+    List<LC?> matchingLCs = Provider.of<Contents>(context,listen: false).postdata.toList();
     for (int i = 0; i < matchingLCs.length; i++) {
       LC? lc = matchingLCs[i];
       if (lc!.chassis.contains(chassis)) {

@@ -8,7 +8,7 @@ part of 'chassis_model.dart';
 
 class ChassisAdapter extends TypeAdapter<Chassis> {
   @override
-  final int typeId = 6;
+  final int typeId = 7;
 
   @override
   Chassis read(BinaryReader reader) {

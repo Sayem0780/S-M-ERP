@@ -8,7 +8,7 @@ part of 'pdf_sale_customer.dart';
 
 class SaleCustomAdapter extends TypeAdapter<SaleCustom> {
   @override
-  final int typeId = 5;
+  final int typeId = 6;
 
   @override
   SaleCustom read(BinaryReader reader) {

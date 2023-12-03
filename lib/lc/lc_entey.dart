@@ -1,8 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/lc/chasis_entry.dart';
+import 'package:smerp/models/chassis_model.dart';
 import 'package:smerp/models/lc_model.dart';
+import 'package:http/http.dart'as http;
+import 'package:convert/convert.dart';
+
+import '../providers/contents.dart';
 
 class LcEntry extends StatefulWidget {
   static const routeName = '/lc entry';
@@ -16,7 +24,7 @@ class LcEntry extends StatefulWidget {
 class _LcEntryState extends State<LcEntry> {
   final _formKey = GlobalKey<FormState>();
   String date='';
-  String lcNo = '', irc = '', supplier = '', shipment = '', lcAmount = '', bank = '';
+  String lcNo = '', irc = '', supplier = '', shipment = '', lcAmount = '', bank = '',profit='';
   TextEditingController lcController = TextEditingController();
   TextEditingController supplierController = TextEditingController();
   TextEditingController shipmentController = TextEditingController();
@@ -24,6 +32,7 @@ class _LcEntryState extends State<LcEntry> {
   TextEditingController bankController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   DateTime selectedDate = DateTime.now();
+  List<String> chassis=[];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -55,6 +64,7 @@ class _LcEntryState extends State<LcEntry> {
 
   @override
   Widget build(BuildContext context) {
+    Contents provider = Provider.of<Contents>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('LC Entry'),
@@ -223,6 +233,7 @@ class _LcEntryState extends State<LcEntry> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 print(date);
+
                                 var box = await Hive.openBox<LC?>('mboxo');
                                 var lc = LC(
                                   lcNo: lcNo,
@@ -233,9 +244,12 @@ class _LcEntryState extends State<LcEntry> {
                                   date: date,
                                   lcAmount: lcAmount,
                                   bank: bank,
+                                  profit: profit,
                                 );
+                                await provider.creatpost(lc);
                                 // var lcIndex = await box.add(lc);
                                 await box.add(lc);
+
                                 // print('LC Index: $lcIndex');
                                 var lcList = box.values.toList();
                                 var positionNumber = lcList.indexOf(lc);
@@ -246,7 +260,7 @@ class _LcEntryState extends State<LcEntry> {
                                 // print(box.length);
                                 // box.close();
                                 if (lc.isInBox) {
-                                  Navigator.of(context).pushNamed(ChasisEntry.routeName, arguments: positionNumber as int);
+                                  Navigator.of(context).pushNamed(ChasisEntry.routeName, arguments: [positionNumber as int,lcAmount,profit]);
                                 }
                               } else {
                                 showDialog(

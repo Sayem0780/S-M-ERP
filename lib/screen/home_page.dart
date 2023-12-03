@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/lc/lc_entey.dart';
 import 'package:smerp/lc/lc_report_screen.dart';
+import 'package:smerp/providers/auth.dart';
 import 'package:smerp/screen/verticals/booked.dart';
 import 'package:smerp/screen/verticals/bank_sale_screen.dart';
 import 'package:smerp/screen/verticals/customer_sale_screen.dart';
 import 'package:smerp/screen/reportSelection.dart';
 import 'package:smerp/screen/verticals/unsold.dart';
 import 'package:smerp/screen/verticals/vat.dart';
+
+import '../providers/contents.dart';
+import 'defautls/login.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -16,34 +21,18 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 
-
 }
 
 class _HomePageState extends State<HomePage> {
-  //
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   openBox();
-  // }
-  //
-  // Future<void> openBox() async {
-  //   print('Hello');
-  //  var box = await Hive.openBox('sbox');
-  //  var lcList = box.values.toList();
-  //   print(box.keys);
-  //   for(int i = 3; i<lcList.length;i++){
-  //     LC lc = lcList[i] as LC;
-  //     lc.bank ="IFIC";
-  //     box.put(lc.key, lc);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('SM Automobile'),centerTitle: true,automaticallyImplyLeading: false,),
+    Provider.of<Contents>(context).fetchAndPrintPosts();
+   Auth a = Provider.of<Auth>(context);
+    return a.isAuth?Scaffold(
+      appBar: AppBar(title: Text('SM Automobile'),
+        centerTitle: true,
+        automaticallyImplyLeading: true,
+      ),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,16 +74,13 @@ class _HomePageState extends State<HomePage> {
                 child: MaterialButton(onPressed: (){
                   Navigator.of(context).pushNamed(NotGivenVatScreen.routeName);
                 },color: Theme.of(context).primaryColorDark,child: Text("VAT List",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),textColor: Colors.white,)),
-
             SizedBox(height: 20,),
-
             Container(
                 height: 50,
                 width: 200,
                 child: MaterialButton(onPressed: (){
                   Navigator.of(context).pushNamed(BookedScreen.routeName);
                 },color: Theme.of(context).primaryColorDark,child: Text("Booked List",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),textColor: Colors.white,)),
-
             SizedBox(height: 20,),
             Container(
               height: 50,
@@ -103,16 +89,20 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pushNamed(ReportSelectionPage.routeName);
               },color: Theme.of(context).primaryColorDark,child: Text("Report",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),textColor: Colors.white,),
             ),
+            TextButton(onPressed: (){
+              a.logOut();
+            }, child: Text("Log Out",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.red),)),
             SizedBox(height: 20,),
           ],
         ),
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: (){Navigator.of(context).pushNamed(LcEntry.routeName);},
         child: const Icon(Icons.add,color: Colors.black,),
         backgroundColor: Colors.amber,
       ),
-    );
+    ):LogInPage();
   }
 }

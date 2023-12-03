@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/screen/home_page.dart';
 import 'package:smerp/models/chassis_model.dart';
 
 import '../../models/lc_model.dart';
+import '../../providers/contents.dart';
 
 class NotGivenVatScreen extends StatefulWidget {
   static const routeName = '/notgivenvat';
@@ -38,7 +40,7 @@ class _NotGivenVatScreenState extends State<NotGivenVatScreen>
   @override
   void dispose() {
     WidgetsBinding.instance!.removeObserver(this as WidgetsBindingObserver);
-    _box.close();
+    // _box.close();
     super.dispose();
   }
 
@@ -46,7 +48,7 @@ class _NotGivenVatScreenState extends State<NotGivenVatScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       // Close the box when the app is paused or the user leaves the page
-      _box.close();
+      // _box.close();
     } else if (state == AppLifecycleState.resumed) {
       // Open the box when the app is resumed or the user enters the page
       openBox();
@@ -54,13 +56,16 @@ class _NotGivenVatScreenState extends State<NotGivenVatScreen>
   }
 
   Future<void> openBox() async {
-    _box = await Hive.openBox<LC?>('mboxo');
+    // _box = await Hive.openBox<LC?>('mboxo');
+
     searchUnsold(); // Call searchUnsold after _box is initialized
   }
 
   void searchUnsold() {
     List<Chassis> b = [];
-    List<LC?> matchingLCs = _box.values.toList();
+    // List<LC?> matchingLCs = _box.values.toList();
+
+    List<LC?> matchingLCs = Provider.of<Contents>(context,listen: false).postdata.toList();
     for (int i = 0; i < matchingLCs.length; i++) {
       List<Chassis> a = matchingLCs[i]!.chassis.toList();
       for (int j = 0; j < a.length; j++) {
@@ -114,7 +119,8 @@ class _NotGivenVatScreenState extends State<NotGivenVatScreen>
   }
 
   LC? findLCForChassis(Chassis chassis) {
-    List<LC?> matchingLCs = _box.values.toList();
+    // List<LC?> matchingLCs = _box.values.toList();
+    List<LC?> matchingLCs = Provider.of<Contents>(context,listen: false).postdata.toList();
     for (int i = 0; i < matchingLCs.length; i++) {
       LC? lc = matchingLCs[i];
       if (lc!.chassis.contains(chassis)) {

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/lc/lc_report_screen.dart';
 import 'package:smerp/models/chassis_model.dart';
 import 'package:smerp/models/lc_model.dart';
+
+import '../providers/contents.dart';
+import '../screen/home_page.dart';
 
 class ChasisEntry extends StatefulWidget {
   static const routeName = '/chassis entry';
@@ -130,7 +134,6 @@ class _ChasisEntryState extends State<ChasisEntry> with WidgetsBindingObserver{
       });
     }
   }
-
   @override
   void dispose() {
     nameController.dispose();;
@@ -169,11 +172,19 @@ class _ChasisEntryState extends State<ChasisEntry> with WidgetsBindingObserver{
     box.put(lc.key, lc);
 
   }
-
   @override
   Widget build(BuildContext context) {
-    int LcIndex = ModalRoute.of(context)!.settings.arguments as int;
-    print(" Under Build "+LcIndex.toString());
+    List<dynamic> data = ModalRoute.of(context)!.settings.arguments as List<dynamic>;
+    int LcIndex = data[0];
+    double lcamount = data[1]==""?0:double.parse(data[1].toString());
+    double lcprofit = data[1]==""?0:double.parse(data[2].toString());
+    String LcAmount = (lcamount+total).toString();
+    String LcProfit = (lcprofit+profit).toString();
+    print("Under Build"+LcIndex.toString());
+
+    Contents provider = Provider.of<Contents>(context);
+    String fetchkey = Provider.of<Contents>(context).currentPostKey;
+    String fetchrootkey = Provider.of<Contents>(context).currentRootKey;
 
     return Scaffold(
       appBar: AppBar(
@@ -1087,7 +1098,37 @@ class _ChasisEntryState extends State<ChasisEntry> with WidgetsBindingObserver{
                      km: km,
                      vat: vat,
                    ), LcIndex);
-                   Navigator.of(context).pushNamed(LcReportScreen.routeName,arguments: LcIndex as int);
+                   Chassis c = Chassis(
+                     name: name,
+                     cc: cc,
+                     chassis: chassis,
+                     engineNo: engineNo,
+                     color: color,
+                     model: model,
+                     remark: remark,
+                     buyingPrice: buying_price,
+                     invoice: invoice,
+                     ttAmount: tt_amount,
+                     portCost: port_cost,
+                     duty: duty,
+                     cnf: cnf,
+                     warfrent: warfrent,
+                     others: others,
+                     total: total,
+                     sellingPrice: selling_price,
+                     profit: profit,
+                     invoiceRate: invoice_rate,
+                     invoiceBdt: invoice_bdt,
+                     ttRate: tt_rate,
+                     ttBdt: tt_bdt,
+                     delivery_date: deliver_date,
+                     sold: sold,
+                     km: km,
+                     vat: vat,
+                   );
+                   provider.createtChassis(c, fetchrootkey,LcAmount,LcProfit);
+                   Navigator.pushNamedAndRemoveUntil(
+                       context,LcReportScreen.routeName, (Route<dynamic> route) => false,arguments: LcIndex as int);
                   } else {
                     showDialog(
                       context: context,

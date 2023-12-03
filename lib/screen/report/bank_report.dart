@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/models/pdf_models/pdf_bank.dart';
 import '../../methods/pdf_method.dart';
+import '../../providers/contents.dart';
 import '../../widgets/search.dart';
 
 class BankReport extends StatefulWidget {
@@ -49,8 +51,10 @@ class _BankReportState extends State<BankReport>  with WidgetsBindingObserver{
   Future<void> openBox() async {
     _box = await Hive.openBox<Bank?>('bankBox'); // Call searchUnsold after _box is initialized
     setState(() {
-      customDataList = _box.values.toList();
-      itemList=_box.values.toList();
+      // customDataList = _box.values.toList();
+      // itemList=_box.values.toList();
+      customDataList =  Provider.of<Contents>(context,listen: false).bankReceiptdata.toList();
+      itemList =  Provider.of<Contents>(context,listen: false).bankReceiptdata.toList();
     });
 
 

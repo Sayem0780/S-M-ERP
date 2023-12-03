@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/models/chassis_model.dart';
 import 'package:smerp/models/pdf_models/pdf_quotation.dart';
+import 'package:smerp/providers/contents.dart';
 import '../../methods/numberToWord.dart';
 import '../../methods/pdf_method.dart';
 
@@ -58,7 +60,10 @@ class _QuotationFormateState extends State<QuotationFormate> {
         price: price.toString(),
         payment_method: payment_method,
         qcode: inWord,
-        currentDate: currentDate);
+        currentDate: currentDate
+    );
+
+    Provider.of<Contents>(context,listen: false).creatQuotation(customData);
 
     await box.add(customData); // Add the customData object to the box
 

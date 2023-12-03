@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:smerp/widgets/formate/customer_reciept.dart';
 import 'package:smerp/widgets/formate/seal_receipt_customer.dart';
 import 'package:smerp/widgets/search.dart';
 import '../../models/chassis_model.dart';
 import '../../models/lc_model.dart';
+import '../../providers/contents.dart';
 
 class CustomerSealScreen extends StatefulWidget {
   static const routeName ='/customerSale';
@@ -51,14 +53,15 @@ class _CustomerSealScreenState extends State<CustomerSealScreen> with WidgetsBin
   }
 
   Future<void> openBox() async {
-    _box = await Hive.openBox<LC?>('mboxo'); // Call searchUnsold after _box is initialized
+    // _box = await Hive.openBox<LC?>('mboxo'); // Call searchUnsold after _box is initialized
     store();
 
   }
 
   void store() {
     List<Chassis> b = [];
-    List<LC?> matchingLCs = _box.values.toList();
+    // List<LC?> matchingLCs = _box.values.toList();
+    List<LC?> matchingLCs = Provider.of<Contents>(context,listen: false).postdata.toList();
     for (int i = 0; i < matchingLCs.length; i++) {
       List<Chassis> a = matchingLCs[i]!.chassis.toList();
       for (int j = 0; j < a.length; j++) {
